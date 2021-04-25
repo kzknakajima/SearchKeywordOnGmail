@@ -11,6 +11,18 @@ from bs4 import BeautifulSoup
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
+def get_message_part(msg):
+    msg_part = msg['payload']
+    return msg_part
+
+def get_message_body(msg_part):
+    msg_body = msg_part['body']['data']
+    return msg_body
+
+def get_decoded_message(encoded_msg):
+    decoded_msg = base64.urlsafe_b64decode(encoded_msg).decode()
+    return decoded_msg
+
 def main():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
@@ -47,15 +59,12 @@ def main():
         for message in messages:
             message = service.users().messages().get(userId='me', id=message['id']).execute()
 
-            message_part = message['payload']
-            message_body = message_part['body']['data']
-            # decoded_msg = base64.urlsafe_b64decode(message_body).decode()
-            decoded_msg = base64.urlsafe_b64decode(message_body).decode()
+            message_part = get_message_part(message)
+            message_body = get_message_body(message_part)
+            decoded_msg = get_decoded_message(message_body)
+            # text = BeautifulSoup(decoded_msg,'html.parser')
 
-            text = BeautifulSoup(decoded_msg,'html.parser')
-
-            # print(decoded_msg)
-            print(text)
+            print(decoded_msg)
 
 if __name__ == '__main__':
     main()
