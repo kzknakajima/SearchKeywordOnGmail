@@ -5,7 +5,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 import base64
-from bs4 import BeautifulSoup
 
 
 # If modifying these scopes, delete the file token.json.
@@ -29,7 +28,6 @@ def get_decoded_message(encoded_msg):
 
 def connect_gmail_service():
     creds = None
-
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -64,7 +62,6 @@ def main():
             message_part = get_message_part(message)
             message_body = get_message_body(message_part)
             decoded_msg = get_decoded_message(message_body)
-            # text = BeautifulSoup(decoded_msg,'html.parser')
             print(decoded_msg)
 
 if __name__ == '__main__':
