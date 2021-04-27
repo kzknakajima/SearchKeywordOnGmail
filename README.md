@@ -33,3 +33,7 @@ GmailのAPIを使用するには、GmailAPIを有効化する必要がありま�
 ダウンロードしたjsonファイルを「credentials.json」にリネームします。
 pythonファイルと同一ディレクトリにjsonファイルを設置し、
 pythonファイルを実行します。
+
+＜参考URL＞
+
+https://qiita.com/orikei/items/73dc1ccc95d1872ab1cf
