@@ -11,6 +11,10 @@ from bs4 import BeautifulSoup
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
+def get_message_list(service,query,max_Results):
+    msg_list = service.users().messages().list(userId='me',q=query,maxResults=max_Results).execute()
+    return msg_list
+
 def get_message_part(msg):
     msg_part = msg['payload']
     return msg_part
@@ -23,14 +27,9 @@ def get_decoded_message(encoded_msg):
     decoded_msg = base64.urlsafe_b64decode(encoded_msg).decode()
     return decoded_msg
 
-def main():
-    """Shows basic usage of the Gmail API.
-    Lists the user's Gmail labels.
-    """
+def connect_gmail_service():
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -44,12 +43,16 @@ def main():
         # Save the credentials for the next run
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
-
     service = build('gmail', 'v1', credentials=creds)
+    return service
 
-    # Call the Gmail API
-    results = service.users().messages().list(userId='me',q='from:mailmag@mag2premium.com',maxResults=1).execute()
 
+def main():
+    query = 'from:mailmag@mag2premium.com'
+    max_Results = 1
+
+    service = connect_gmail_service()
+    results = get_message_list(service,query,max_Results)
     messages = results.get('messages',[])
 
     if not messages:
@@ -58,12 +61,10 @@ def main():
         print('Messages:')
         for message in messages:
             message = service.users().messages().get(userId='me', id=message['id']).execute()
-
             message_part = get_message_part(message)
             message_body = get_message_body(message_part)
             decoded_msg = get_decoded_message(message_body)
             # text = BeautifulSoup(decoded_msg,'html.parser')
-
             print(decoded_msg)
 
 if __name__ == '__main__':
