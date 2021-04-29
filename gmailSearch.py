@@ -5,10 +5,16 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 import base64
+import re
 
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+
+def replace_htmltxt_to_plaintxt(html_msg):
+    pattern = r'<.*?>' # patterns of html tag
+    plain_msg = re.sub(pattern,'',html_msg)
+    return plain_msg
 
 def get_message_list(service,query,max_Results):
     msg_list = service.users().messages().list(userId='me',q=query,maxResults=max_Results).execute()
@@ -62,7 +68,8 @@ def main():
             message_part = get_message_part(message)
             message_body = get_message_body(message_part)
             decoded_msg = get_decoded_message(message_body)
-            print(decoded_msg)
+            plain_msg = replace_htmltxt_to_plaintxt(decoded_msg)
+            print(plain_msg)
 
 if __name__ == '__main__':
     main()
