@@ -11,12 +11,12 @@ import re
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-def results_of_search(plain_msg,keyword):
+def results_of_search(plain_msg,keyword,sentence_vol):
     paragraphs = re.split(r'\r\n', plain_msg)
     list_of_some_paragraphs = []
-    for i,p in enumerate(paragraphs):
-        if keyword in p:
-            list_of_some_paragraphs.append([paragraphs[i-1],paragraphs[i],paragraphs[i+1]])
+    for i,paragraph in enumerate(paragraphs):
+        if keyword in paragraph:
+            list_of_some_paragraphs.append(paragraphs[i-sentence_vol : i+sentence_vol+1])
     return list_of_some_paragraphs
 
 def replace_htmltxt_to_plaintxt(html_msg):
@@ -34,11 +34,6 @@ def get_count_of_keyword(plain_msg,keyword):
 
 def get_message_date(messages,msg):
     headers = msg['payload']['headers']
-    # print(type(headers),type(headers[0]))
-    # print(headers[0])
-    # print(headers[0].keys())
-    # print(headers[0].values())
-    # print(headers[0].get('name'))
     for h in headers:
         if h.get('name') == 'Date':
             msg_date = h.get('value')
@@ -76,9 +71,10 @@ def connect_gmail_service():
 
 
 def main():
-    keyword = 'コロナ'
-    query = 'from:mailmag@mag2premium.com'
-    max_Results = 3 #number of latest message
+    keyword = 'コロナ' #the word to search
+    query = 'from:mailmag@mag2premium.com' #query for gmail API
+    max_Results = 2 #the number of latest message
+    sentence_volume = 2
 
     service = connect_gmail_service()
     results = get_message_list(service,query,max_Results)
@@ -100,7 +96,7 @@ def main():
             print(f'Count: "{keyword}" : "{keyword_count}" ')
 
             if keyword in plain_msg:
-                lst_of_paragraphs = results_of_search(plain_msg,keyword)
+                lst_of_paragraphs = results_of_search(plain_msg,keyword,sentence_volume)
                 print('--------------------------')
                 for para in lst_of_paragraphs:
                     for sentence in para:
