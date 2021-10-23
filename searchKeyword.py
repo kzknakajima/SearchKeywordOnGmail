@@ -1,6 +1,6 @@
-import base64
 import re
 from gmailService import connect_gmail_service
+from messageFunction import get_message,get_message_part,get_message_body,get_decoded_message
 
 def results_of_search(plain_msg,keyword,sentence_vol):
     paragraphs = re.split(r'\r\n', plain_msg)
@@ -30,18 +30,6 @@ def get_message_date(messages,msg):
             msg_date = h.get('value')
     return msg_date
 
-def get_message_part(msg):
-    msg_part = msg['payload']
-    return msg_part
-
-def get_message_body(msg_part):
-    msg_body = msg_part['body']['data']
-    return msg_body
-
-def get_decoded_message(encoded_msg):
-    decoded_msg = base64.urlsafe_b64decode(encoded_msg).decode()
-    return decoded_msg
-
 
 def main():
     keyword = input("Please input keyword:")
@@ -57,16 +45,14 @@ def main():
         print('No messages found.')
     else:
         for message in messages:
-            message = service.users().messages().get(userId='me', id=message['id']).execute()
-            message_part = get_message_part(message)
-            message_body = get_message_body(message_part)
+            message_rslt,message_body = get_message(service,message)
             decoded_msg = get_decoded_message(message_body)
             plain_msg = replace_htmltxt_to_plaintxt(decoded_msg)
 
-            message_date = get_message_date(messages,message)
-            print('Date:',message_date[:-20])#-20 means to remove time, leave just Date
+            message_date = get_message_date(messages,message_rslt)
             keyword_count = get_count_of_keyword(plain_msg,keyword)
-            # print(f'Count: "{keyword}" : "{keyword_count}" ')
+            print('Date:',message_date[:-20])#-20 means to remove time, leave just Date
+            print(f'Count: "{keyword}" : {keyword_count} ')
 
             if keyword in plain_msg:
                 lst_of_paragraphs = results_of_search(plain_msg,keyword,sentence_volume)
@@ -75,10 +61,9 @@ def main():
                     for sentence in para:
                         print(sentence)
                     print('--------------------------')
-                print('############################')
+                print('###################################')
             else:
-                # print('Your keyword is not found in Message.')
-                print('############################')
+                print('###################################')
 
 if __name__ == '__main__':
     main()
