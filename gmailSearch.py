@@ -1,4 +1,3 @@
-from __future__ import print_function
 import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -71,9 +70,9 @@ def connect_gmail_service():
 
 
 def main():
-    keyword = 'コロナ' #the word to search
+    keyword = input("Please input keyword:")
     query = 'from:mailmag@mag2premium.com' #query for gmail API
-    max_Results = 2 #the number of latest message
+    max_Results = 10 #the number of latest message
     sentence_volume = 2
 
     service = connect_gmail_service()
@@ -93,7 +92,7 @@ def main():
             message_date = get_message_date(messages,message)
             print('Date : ',message_date)
             keyword_count = get_count_of_keyword(plain_msg,keyword)
-            print(f'Count: "{keyword}" : "{keyword_count}" ')
+            # print(f'Count: "{keyword}" : "{keyword_count}" ')
 
             if keyword in plain_msg:
                 lst_of_paragraphs = results_of_search(plain_msg,keyword,sentence_volume)
@@ -104,7 +103,7 @@ def main():
                     print('--------------------------')
                 print('############################')
             else:
-                print('Your keyword is not found in Message.')
+                # print('Your keyword is not found in Message.')
                 print('############################')
 
 if __name__ == '__main__':
