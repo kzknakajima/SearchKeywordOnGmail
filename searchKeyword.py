@@ -1,14 +1,7 @@
-import os.path
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
 import base64
 import re
 
-
-# If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+from gmailService import connect_gmail_service
 
 def results_of_search(plain_msg,keyword,sentence_vol):
     paragraphs = re.split(r'\r\n', plain_msg)
@@ -50,29 +43,29 @@ def get_decoded_message(encoded_msg):
     decoded_msg = base64.urlsafe_b64decode(encoded_msg).decode()
     return decoded_msg
 
-def connect_gmail_service():
-    creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-    service = build('gmail', 'v1', credentials=creds)
-    return service
+# def connect_gmail_service():
+#     creds = None
+#     if os.path.exists('token.json'):
+#         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+#     # If there are no (valid) credentials available, let the user log in.
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(Request())
+#         else:
+#             flow = InstalledAppFlow.from_client_secrets_file(
+#                 'credentials.json', SCOPES)
+#             creds = flow.run_local_server(port=0)
+#         # Save the credentials for the next run
+#         with open('token.json', 'w') as token:
+#             token.write(creds.to_json())
+#     service = build('gmail', 'v1', credentials=creds)
+#     return service
 
 
 def main():
     keyword = input("Please input keyword:")
     query = 'from:mailmag@mag2premium.com' #query for gmail API
-    max_Results = 10 #the number of latest message
+    max_Results = 5 #the number of latest message
     sentence_volume = 2
 
     service = connect_gmail_service()
@@ -90,7 +83,7 @@ def main():
             plain_msg = replace_htmltxt_to_plaintxt(decoded_msg)
 
             message_date = get_message_date(messages,message)
-            print('Date : ',message_date)
+            print('Date:',message_date[:-20])#-20 means to remove time, leave just Date
             keyword_count = get_count_of_keyword(plain_msg,keyword)
             # print(f'Count: "{keyword}" : "{keyword_count}" ')
 
