@@ -28,7 +28,7 @@ def get_count_of_keyword(plain_msg, keyword):
     return result_of_count
 
 
-def get_message_date(messages, msg):
+def get_message_date(msg):
     headers = msg['payload']['headers']
     for h in headers:
         if h.get('name') == 'Date':
@@ -54,7 +54,8 @@ def main():
             decoded_msg = get_decoded_message(message_body)
             plain_msg = replace_htmltxt_to_plaintxt(decoded_msg)
 
-            message_date = get_message_date(messages, message_rslt)
+            # message_date = get_message_date(messages, message_rslt)
+            message_date = get_message_date(message_rslt)
             keyword_count = get_count_of_keyword(plain_msg, keyword)
             print('Date:', message_date[:-20])  # :-20 remove time, leave just Date
             print(f'Count: {keyword_count}')
