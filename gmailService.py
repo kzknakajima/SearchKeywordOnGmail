@@ -7,6 +7,7 @@ from google.oauth2.credentials import Credentials
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
+
 def connect_gmail_service():
     creds = None
     if os.path.exists('token.json'):
