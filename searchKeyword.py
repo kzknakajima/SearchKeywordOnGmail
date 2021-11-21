@@ -38,9 +38,9 @@ def get_message_date(messages, msg):
 
 def main():
     keyword = input("Please input keyword:")
-    query = 'from:mailmag@mag2premium.com'  # query for gmail API
-    max_Results = 10  # the number of latest message
-    sentence_volume = 2
+    query = 'from:mailmag@mag2premium.com'
+    max_Results = 10  # the number of searched mails
+    sentence_volume = 2  # the number of printed range, hitting keyword
 
     service = connect_gmail_service()
     results = get_message_list(service, query, max_Results)
